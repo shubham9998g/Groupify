@@ -1,0 +1,7 @@
+flask
+insightface
+onnxruntime
+opencv-python-headless
+hdbscan
+scikit-learn
+numpy

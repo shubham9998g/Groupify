@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Groupify</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}" />
+
+
+</head>
+
+
+<body>
+    <!-- Topbar / Logo -->
+    <div class="topbar">Groupify</div>
+
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-text">
+                <h1>Too Many Photos. <br> Not Enough Time?</h1>
+                <p>Let AI organize your memories, one face at a time.</p>
+                <h3 class="typewriter-text"></h3>
+
+                <button onclick="location.href='#upload_section'">Try Groupify Today</button>
+            </div>
+            <div>
+                <img src="{{ url_for('static', filename='images/hero.png') }}" alt="Gallery Preview">
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2>Your Gallery Just Got Smarter</h2>
+        <p>Groupify uses advanced facial recognition and clustering to organize your photos automatically. No more
+            scrolling, just smiling.</p>
+        <div class="feature-grid">
+            <div class="feature">
+                <img src="{{ url_for('static', filename='images/1.png') }}" alt="Family Album">
+                <h3>Face-Based Albums</h3>
+                <p>Automatically create albums for each person—perfect for families, friends, and events.</p>
+            </div>
+            <div class="feature">
+                <img src="{{ url_for('static', filename='images/2.png') }}" alt="Search Faces">
+                <h3>Smart Search</h3>
+                <p>Find all photos of someone instantly—even without tagging or folders.</p>
+            </div>
+            <div class="feature">
+                <img src="{{ url_for('static', filename='images/3.png') }}" alt="Declutter">
+                <h3>Declutter Instantly</h3>
+                <p>Groupify identifies duplicates, blurry, or crowded images—clean up in one tap.</p>
+                <div id="upload_section"></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- <button class="organize-button">Organize My Memories</button> -->
+    <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
+        <div class="upload_section">
+            <label for="file" class="organize-button">Select Photos</label>
+            <input id="file" type="file" name="photos" multiple required style="display: none;">
+            <span id="fileCount" class="file-count">No files selected</span>
+            {% if message %}
+            <p style="color:red; text-align:center;">{{ message }}</p>
+            {% endif %}
+
+            <input class="upload" type="submit" value="Sumbit and Groupify">
+        </div>
+    </form>
+
+    <!-- Loader -->
+    <div id="loader" style="display: none; text-align: center; margin-top: 20px;">
+        <p>Grouping faces, please wait...</p>
+    </div>
+
+
+    {% if previews %}
+    <form action="/finalize_and_download" method="post">
+        <h2>Clustered Gallery</h2>
+        <div class="image-container">
+            {% for preview in previews %}
+            <div class="image-wrapper">
+                <img class="preview" src="{{ url_for('send_preview', filename=preview.split('/')[-1]) }}">
+                <input type="hidden" name="old_names" value="{{ preview }}">
+                <input class="new_name" type="text" name="new_names" placeholder="name" required>
+            </div>
+            {% endfor %}
+        </div>
+
+        <input type="hidden" name="session_id" value="{{ session_id }}">
+
+        <input class="download" id="downloaded" type="submit" value="Download ZIP ">
+    </form>
+    {% endif %}
+
+
+
+    <!-- Emotional Section -->
+    <section class="emotional">
+        <div class="emotional-content">
+            <img src="{{ url_for('static', filename='images/4.png') }}" alt="Memory Timeline">
+            <div class="emotional-text">
+                <h2>From Baby Steps to Graduation—All In One Album</h2>
+                <p>Whether it's your child's first smile or last school day, Groupify keeps their memories
+                    together—automatically.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        © 2025 Groupify. All rights reserved.
+    </footer>
+</body>
+<script>
+    // Smooth scroll to features section
+    const text = "Click. Upload. Groupify...";
+    document.querySelector(".typewriter-text").textContent = text;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+        const loader = document.getElementById("loader");
+
+        form.addEventListener("submit", function () {
+            loader.style.display = "block";
+        });
+    });
+
+
+    const fileInput = document.getElementById('file');
+    const fileCountDisplay = document.getElementById('fileCount');
+
+    fileInput.addEventListener('change', function () {
+        const count = fileInput.files.length;
+        fileCountDisplay.textContent = count > 0 ? `${count} file${count > 1 ? 's' : ''}` : '';
+    });
+
+    // Preserve scroll to #upload_section after reload
+    const scrollKey = 'scrollToUpload';
+
+    // On form submit, set scroll flag
+    document.getElementById('uploadForm').addEventListener('submit', function () {
+        localStorage.setItem(scrollKey, 'true');
+    });
+
+    // After reload, scroll to upload section if flag exists
+    window.addEventListener('load', () => {
+        if (localStorage.getItem(scrollKey) === 'true') {
+            localStorage.removeItem(scrollKey);
+            const element = document.getElementById('upload_section');
+            const offset = -100; // Scroll a bit higher
+            const bodyRect = document.body.getBoundingClientRect().top;
+            const elementRect = element.getBoundingClientRect().top;
+            const elementPosition = elementRect - bodyRect;
+            const offsetPosition = elementPosition + offset;
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'auto' // Smooth scroll
+            });
+        }
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', function (e) {
+        const fileInput = document.getElementById('file');
+        if (fileInput.files.length === 1) {
+            alert("Please upload more than one image for meaningful grouping.");
+            e.preventDefault(); // prevent form submission
+        }
+    });
+</script>
+
+</html>

@@ -1,0 +1,372 @@
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Knewave&family=Permanent+Marker&display=swap");
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+
+.topbar {
+  background: rgba(215, 219, 238, 0.6);
+  /* semi-transparent */
+  backdrop-filter: blur(10px);
+  /* glossy blur */
+  -webkit-backdrop-filter: blur(50px);
+  /* Safari support */
+  padding: 1rem 2rem;
+  font-family: "Knewave", sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  color: #4f46e5;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+section {
+  padding: 5rem 2rem;
+}
+
+.hero {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(to right, #7c3aed, #4f46e5);
+  color: white;
+}
+
+.hero-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media (min-width: 768px) {
+  .hero-container {
+    flex-direction: row;
+  }
+}
+
+.hero-text {
+  max-width: 600px;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .hero-text {
+    margin-top: -8rem;
+    /* Desktop & tablets: move up */
+  }
+}
+
+.hero h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.hero p {
+  font-size: 1.125rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero button {
+  background: white;
+  color: #4f46e5;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.hero img {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 2rem;
+}
+
+@media (min-width: 768px) {
+  .hero img {
+    margin-top: 0;
+  }
+}
+
+.typewriter-text {
+  font-size: 1.5rem;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid #d81b60;
+  width: 0;
+  animation: typing 2s steps(1000, end) infinite,
+    blink 0.7s step-end infinite alternate;
+}
+
+.features {
+  background: white;
+  text-align: center;
+}
+
+.features h2 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.features p {
+  font-size: 1.125rem;
+  color: #4b5563;
+  max-width: 600px;
+  margin: 0 auto 3rem;
+}
+
+.feature-grid {
+  display: grid;
+  gap: 2.5rem;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.feature {
+  background: #e6ecf1;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.feature:hover {
+  transform: scale(1.02);
+  transition: ease-in-out 0.2s;
+}
+
+.feature img {
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+  width: 250px;
+  max-height: 200px;
+}
+
+.feature h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.feature p {
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+/*.organize-button,
+.upload {
+  background: #4f46e5;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  display: block;
+  margin: -2rem auto 1rem;
+  max-width: 175px;
+  text-align: center;
+}*/
+.organize-button,
+.upload {
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 1rem;
+  background-color: #4b3cd4;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.organize-button:hover,
+input[type="submit"]:hover {
+  background: #312797;
+  transition: background 0.2s ease;
+}
+
+.upload_section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+.file-count {
+  font-size: 1rem;
+  color: black;
+  text-align: center;
+}
+
+/* Grouped People Section */
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 2rem 0;
+  text-align: center;
+  color: #4f46e5;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.image-wrapper {
+  margin: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.image-wrapper img {
+  height: 100px;
+  width: 100px;
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+  /* Set a max width for images */
+  border-radius: 10px;
+}
+
+.new_name {
+  margin-top: 10px;
+  padding: 5px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 25%;
+  text-align: center;
+}
+.download {
+  background: #4f46e5;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  display: block;
+  margin: 2rem auto;
+  max-width: 175px;
+  text-align: center;
+}
+
+.emotional {
+  background: #eef2ff;
+}
+
+.emotional-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 90%;
+  justify-content: center;
+}
+
+.emotional img {
+  width: 90%;
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.emotional-text h2 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.emotional-text p {
+  font-size: 1.125rem;
+  color: #374151;
+  margin-bottom: 1.5rem;
+}
+
+/*responsive*/
+@media (min-width: 768px) {
+  .emotional-content {
+    flex-direction: row;
+    gap: 15rem;
+  }
+
+  .emotional img {
+    width: 40%;
+  }
+
+  .emotional-text h2 {
+    font-size: 3rem;
+  }
+
+  .emotional-text p {
+    font-size: 1.25rem;
+  }
+
+  .upload_section {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .feature-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+footer {
+  background: white;
+  color: #6b7280;
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.875rem;
+}
+
+@keyframes typing {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 23ch;
+  }
+}
+
+@keyframes blink {
+  from {
+    border-color: transparent;
+  }
+
+  to {
+    border-color: #ffffff;
+  }
+}
