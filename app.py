@@ -7,40 +7,31 @@ import hdbscan
 from collections import defaultdict
 from zipfile import ZipFile
 import random
+import time
+
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'static/uploads'
 RESULT_FOLDER = 'static/results'
 PREVIEW_FOLDER = 'static/previews'
 
-if os.path.exists(UPLOAD_FOLDER):
-    shutil.rmtree(UPLOAD_FOLDER)
-    os.makedirs(UPLOAD_FOLDER)
-
-if os.path.exists(RESULT_FOLDER):
-    shutil.rmtree(RESULT_FOLDER)
-    os.makedirs(RESULT_FOLDER)
-    
-if os.path.exists(PREVIEW_FOLDER):
-    shutil.rmtree(PREVIEW_FOLDER)
-    os.makedirs(PREVIEW_FOLDER)
-
-
+# Prepare face detection model
 face_app = FaceAnalysis(name="buffalo_l")
 face_app.prepare(ctx_id=0, det_size=(640, 640))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    # 🔁 Clear previous session data on every visit (GET or POST)
+    for folder in [UPLOAD_FOLDER, RESULT_FOLDER, PREVIEW_FOLDER]:
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
+        os.makedirs(folder)
+
     zip_url = None
     previews = []
-    session_id = None
+    session_id = str(uuid.uuid4())
 
     if request.method == 'POST':
-        # Clean previous previews
-        shutil.rmtree(PREVIEW_FOLDER)
-        os.makedirs(PREVIEW_FOLDER)
-
-        session_id = str(uuid.uuid4())
         session_upload_dir = os.path.join(UPLOAD_FOLDER, session_id)
         os.makedirs(session_upload_dir)
 
@@ -62,13 +53,13 @@ def index():
                     paths.append(file_path)
 
         if not embeddings:
-            return render_template('index.html', zip_url=None, previews=[],message="Not valid faces detected.")
-        if len(embeddings)<2:
+            return render_template('index.html', zip_url=None, previews=[], message="No valid faces detected.")
+        if len(embeddings) < 2:
             return render_template('index.html', message="Please upload at least two images with faces.")
 
-#cluster embeddings
+        # Clustering
         embeddings = normalize(np.array(embeddings))
-        clusterer = hdbscan.HDBSCAN(min_cluster_size=2,min_samples=1)
+        clusterer = hdbscan.HDBSCAN(min_cluster_size=2, min_samples=1)
         labels = clusterer.fit_predict(embeddings)
 
         clusters = defaultdict(list)
@@ -85,8 +76,7 @@ def index():
             os.makedirs(person_dir, exist_ok=True)
             for img_path in img_paths:
                 shutil.copy(img_path, person_dir)
-                
-            # 1. Try to find a photo with only one face
+
             selected_preview = None
             for img_path in img_paths:
                 img = cv2.imread(img_path)
@@ -95,21 +85,17 @@ def index():
                     selected_preview = img_path
                     break
 
-            # 2. If none found, just pick the last one (or random)
             if not selected_preview:
-                selected_preview = random.choice(img_paths)  # fallback
+                selected_preview = random.choice(img_paths)
 
-            # 3. Save preview
             preview_name = f"person_{label}.jpg"
             preview_path = os.path.join(PREVIEW_FOLDER, preview_name)
             shutil.copy(selected_preview, preview_path)
             previews.append(f"previews/{preview_name}")
 
-   
         # ZIP creation
         zip_path = os.path.join(RESULT_FOLDER, f"{session_id}.zip")
         with ZipFile(zip_path, 'w') as zipf:
-            
             for root, dirs, files in os.walk(result_dir):
                 for file in files:
                     filepath = os.path.join(root, file)
@@ -117,8 +103,7 @@ def index():
 
         zip_url = f"/download/{session_id}.zip"
 
-    return render_template('index.html', previews=previews, session_id=session_id)
-
+    return render_template('index.html', previews=previews, session_id=session_id, zip_url=zip_url)
 
 @app.route('/download/<filename>')
 def download_file(filename):
@@ -136,19 +121,31 @@ def finalize_and_download():
 
     result_dir = os.path.join(RESULT_FOLDER, session_id)
 
+
+    # Inside finalize_and_download function...
     for old, new in zip(old_names, new_names):
         label = old.split('/')[-1].replace("person_", "").replace(".jpg", "")
         old_folder = os.path.join(result_dir, f"{'unknown' if label == 'unknown' else 'person_' + label}")
-        new_folder = os.path.join(result_dir, new.replace(" ", "_"))
+        new_name_clean = new.replace(" ", "_")
+        new_folder = os.path.join(result_dir, new_name_clean)
+
+        # Avoid FileExistsError by adding suffix if folder exists
+        suffix = 1
+        original_new_folder = new_folder
+        while os.path.exists(new_folder):
+            new_folder = f"{original_new_folder}_{suffix}"
+            suffix += 1
+
         if os.path.exists(old_folder):
             os.rename(old_folder, new_folder)
 
-        old_preview = os.path.join(PREVIEW_FOLDER, f"person_{label}.jpg")
-        new_preview = os.path.join(PREVIEW_FOLDER, f"{new.replace(' ', '_')}.jpg")
-        if os.path.exists(old_preview):
-            os.rename(old_preview, new_preview)
+    # Update preview too
+    old_preview = os.path.join(PREVIEW_FOLDER, f"person_{label}.jpg")
+    new_preview = os.path.join(PREVIEW_FOLDER, f"{new_name_clean}.jpg")
+    if os.path.exists(old_preview):
+        os.rename(old_preview, new_preview)
 
-    # Create a new zip
+
     zip_path = os.path.join(RESULT_FOLDER, f"{session_id}_renamed.zip")
     with ZipFile(zip_path, 'w') as zipf:
         for root, dirs, files in os.walk(result_dir):
